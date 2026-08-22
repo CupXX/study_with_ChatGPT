@@ -1,0 +1,100 @@
+:root {
+  color-scheme: light;
+  --ink: #1f2933;
+  --muted: #5f6b76;
+  --paper: #fbfaf7;
+  --card: #ffffff;
+  --line: #dedbd4;
+  --accent: #315b7d;
+  --soft: #eef3f7;
+  --good: #2d6a4f;
+  --bad: #9b3a3a;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  line-height: 1.65;
+}
+main {
+  width: min(860px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 80px;
+}
+h1, h2, h3 { line-height: 1.2; }
+h1 { font-size: clamp(2rem, 5vw, 3.6rem); margin-bottom: .35rem; }
+h2 { margin-top: 2.4rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+p, li { font-size: 1.08rem; }
+a { color: var(--accent); }
+.kicker, .muted { color: var(--muted); }
+.kicker { letter-spacing: .08em; text-transform: uppercase; font-size: .82rem; }
+.card, .scenario, .quiz {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px 22px;
+  margin: 20px 0;
+}
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  align-items: stretch;
+  margin: 24px 0;
+}
+.flow > div {
+  background: var(--soft);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  position: relative;
+}
+.flow > div:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 700;
+}
+.term { font-weight: 700; }
+button.choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 8px 0;
+  font: inherit;
+  cursor: pointer;
+}
+button.choice:hover { background: var(--soft); }
+.feedback { margin-top: 10px; font-weight: 700; }
+.feedback.good { color: var(--good); }
+.feedback.bad { color: var(--bad); }
+.callout {
+  border-left: 4px solid var(--accent);
+  padding: 8px 0 8px 16px;
+  margin: 24px 0;
+}
+code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .95em; }
+@media (max-width: 700px) {
+  .flow { grid-template-columns: 1fr; }
+  .flow > div:not(:last-child)::after {
+    content: "↓";
+    right: 50%;
+    top: auto;
+    bottom: -18px;
+    transform: translateX(50%);
+  }
+}
+@media print {
+  body { background: white; }
+  main { width: 100%; padding: 0; }
+  button.choice { display: none; }
+}
