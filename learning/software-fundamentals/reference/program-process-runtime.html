@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reference — Program / Process / Runtime</title>
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body>
+<main>
+  <p class="kicker">Software Fundamentals · Reference</p>
+  <h1>Program / Process / Runtime</h1>
+  <p class="muted">快速判断：你现在说的是“文件里的东西”、“正在运行的实例”，还是“负责执行它的环境”？</p>
+
+  <section class="card">
+    <h2 style="margin-top:0;border-top:0;padding-top:0">四个最容易混的词</h2>
+    <p><span class="term">Source code（源代码）</span>：人写下来的程序描述。它是静态内容，本身不会主动做任何事情。</p>
+    <p><span class="term">Program（程序）</span>：为完成某个任务而组织起来的指令/软件制品。日常语境里它可能指源码，也可能指已经能执行的软件；所以真正讨论运行机制时，要继续问“它现在运行了吗？”</p>
+    <p><span class="term">Process（进程）</span>：操作系统中一个<strong>正在运行</strong>的程序实例。它有自己的 PID、内存空间、环境变量和其他运行资源。</p>
+    <p><span class="term">Runtime（运行时/运行环境）</span>：让某种程序真正能够执行的那套环境。以 JavaScript 为例，Node.js 是一个 JavaScript runtime environment；它包含执行 JavaScript 所需的引擎，并提供文件、网络等宿主能力。</p>
+  </section>
+
+  <div class="flow" aria-label="execution flow">
+    <div>代码文件<br><small>静态</small></div>
+    <div>启动 Runtime<br><small>如 Node.js</small></div>
+    <div>OS 创建 Process<br><small>正在运行</small></div>
+    <div>程序执行<br><small>直到退出</small></div>
+  </div>
+
+  <section class="callout">
+    <strong>最重要的一句话：</strong>代码可以一直躺在磁盘里；只有当某个运行环境把它启动起来，操作系统才会出现一个真正活着的进程。
+  </section>
+
+  <h2>Node.js 例子</h2>
+  <p>项目文件没有因为你安装 Node 22 或 Node 24 而自动改变；改变的是“哪一版 Node runtime 来执行这些文件”。当你在终端启动一个 Node 应用时，系统会创建一个 Node process。终端关闭、进程被终止，那个正在运行的实例也就没有了；代码文件仍然在。</p>
+
+  <h2>来源</h2>
+  <ul>
+    <li><a href="https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads">Microsoft Learn — Processes and Threads</a></li>
+    <li><a href="https://nodejs.org/en/learn/getting-started/introduction-to-nodejs">Node.js — Introduction to Node.js</a></li>
+    <li><a href="https://nodejs.org/api/process.html">Node.js — Process API</a></li>
+    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN — JavaScript execution model</a></li>
+  </ul>
+</main>
+</body>
+</html>
