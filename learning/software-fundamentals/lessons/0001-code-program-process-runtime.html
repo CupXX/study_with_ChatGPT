@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson 0001 — 代码不是正在运行的软件</title>
+  <link rel="stylesheet" href="../assets/course.css" />
+</head>
+<body>
+<main>
+  <p class="kicker">Software Fundamentals · Lesson 0001</p>
+  <h1>代码不是正在运行的软件</h1>
+  <p class="muted">Program · Process · Runtime｜目标：看懂“一个项目是怎么从文件变成正在运行的东西”的最小模型。</p>
+
+  <section class="callout">
+    <strong>学完这一课，你应该能解释：</strong><br>
+    为什么代码明明还在 GitHub / 硬盘里，Worker 却可能已经“不存在了”；以及为什么换 Node 22 / Node 24 会改变程序能不能跑，却不会自动改掉你的项目代码。
+  </section>
+
+  <h2>01. 先做一个最重要的切分</h2>
+  <p>软件开发里一个非常容易被语言掩盖的事实是：</p>
+  <div class="card">
+    <p style="font-size:1.35rem;margin:.2rem 0"><strong>“有代码” ≠ “代码正在运行”。</strong></p>
+  </div>
+  <p>你可以把一个项目在 GitHub 放十年。里面的文件不会因为“它是一个程序”就自己执行。它只是<strong>静态的软件制品</strong>。</p>
+  <p>当你点击 Run、执行一个命令、启动服务器时，才发生第二件事：某个运行环境开始执行这些指令，操作系统为这次执行建立一个<strong>进程（process）</strong>。</p>
+
+  <div class="flow" aria-label="from code to running software">
+    <div><strong>代码</strong><br><small>磁盘上的文件</small></div>
+    <div><strong>Runtime</strong><br><small>负责让代码能执行</small></div>
+    <div><strong>Process</strong><br><small>OS 中活着的实例</small></div>
+    <div><strong>Behaviour</strong><br><small>程序开始做事情</small></div>
+  </div>
+
+  <p>Microsoft 对 process 的最简定义就是：<strong>an executing program</strong>，也就是“一个正在执行的程序”。进程会得到执行所需的资源，例如自己的虚拟地址空间、系统资源、环境变量和进程 ID。<a href="https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads">[Microsoft Learn]</a></p>
+
+  <h2>02. Runtime 到底是什么？</h2>
+  <p><strong>Runtime（运行时 / 运行环境）</strong>是让某类代码真正能够执行的那套软件环境。</p>
+  <p>以 JavaScript 为例，Node.js 官方直接把 Node 定义为一个 <strong>JavaScript runtime environment</strong>。Node 使用 V8 JavaScript engine，并在浏览器之外提供文件系统、网络等程序需要的能力。<a href="https://nodejs.org/en/learn/getting-started/introduction-to-nodejs">[Node.js]</a></p>
+
+  <div class="scenario">
+    <strong>所以安装 Node 22 和 Node 24，换掉的是什么？</strong>
+    <p>通常不是你的项目文件，而是<strong>负责执行这些 JavaScript 文件的 runtime 版本</strong>。</p>
+    <p>同一份代码交给不同 runtime 版本，可能因为支持的 API、依赖兼容性或行为差异而出现不同结果。</p>
+  </div>
+
+  <p>这里再加一个容易混淆的点：<strong>Runtime 也不是 Process。</strong></p>
+  <p>Node 是你安装在电脑上的运行环境；当你执行 Node 应用时，操作系统才会创建一个正在运行的 Node process。Node 官方的 <code>process</code> 文档描述的就是“当前 Node.js 进程”。<a href="https://nodejs.org/api/process.html">[Node.js Process API]</a></p>
+
+  <h2>03. 用你遇到过的 Worker 串起来</h2>
+  <div class="card">
+    <p><strong>A. GitHub / 硬盘里的 Worker 文件</strong><br>这是静态代码。PowerShell 关不关，它都还在。</p>
+    <p><strong>B. Node.js</strong><br>这是执行 JavaScript 的 runtime。</p>
+    <p><strong>C. PowerShell 里启动后的 Worker</strong><br>这时操作系统里出现了一个正在运行的 process。它可以持续查询任务、等待事件、处理工作。</p>
+    <p><strong>D. 结束那个运行中的 Worker</strong><br>Process 消失了，但代码文件并不会因此消失。下一次仍然可以再次启动，产生一个新的 process。</p>
+  </div>
+
+  <p>这也是为什么“代码已经部署/已经存在”和“服务现在活着”是两种完全不同的问题。后面学 deployment、server、worker、container 时，我们都会重新用到这一刀。</p>
+
+  <h2>04. 再多切一刀：Process 不是 Agent</h2>
+  <p>以后你会学 AI Agent，所以现在先避免另一个混淆：</p>
+  <div class="card">
+    <p><strong>Process</strong> 是操作系统层面的“正在运行的程序实例”。</p>
+    <p><strong>Worker</strong> 是这个程序承担的一种工作角色。</p>
+    <p><strong>Agent</strong> 是一种应用/系统行为模式，它可以运行在某个 process 里面。</p>
+  </div>
+  <p>它们不是三个平级词。一个 process 可以运行一个 Worker；一个 Worker 里面也可能包含 Agent loop。</p>
+
+  <h2>05. 快速检查</h2>
+  <p>不要背定义。判断下面三句话。每次刷新页面，选项顺序都会变化。</p>
+
+  <section class="quiz" data-quiz>
+    <p><strong>Q1.</strong> “我把正在交互运行 Worker 的终端关掉，所以 GitHub 里的 Worker 代码也被删除了。”</p>
+    <button class="choice" data-choice data-correct="false" data-correct-feedback="" data-wrong-feedback="对。终止运行实例不会删除静态代码。">正确</button>
+    <button class="choice" data-choice data-correct="true" data-correct-feedback="对。代码和正在运行的 process 是两回事。" data-wrong-feedback="">错误</button>
+    <div class="feedback" data-feedback></div>
+  </section>
+
+  <section class="quiz" data-quiz>
+    <p><strong>Q2.</strong> “同一份 JavaScript 源码，可以由不同版本的 Node runtime 来执行。”</p>
+    <button class="choice" data-choice data-correct="true" data-correct-feedback="对。runtime 版本与项目文件本身是两个维度。" data-wrong-feedback="">正确</button>
+    <button class="choice" data-choice data-correct="false" data-correct-feedback="" data-wrong-feedback="不对。Node 版本变化不要求源码文件自动变化。">错误</button>
+    <div class="feedback" data-feedback></div>
+  </section>
+
+  <section class="quiz" data-quiz>
+    <p><strong>Q3.</strong> “Process 最准确地指磁盘里保存着的那份程序文件。”</p>
+    <button class="choice" data-choice data-correct="false" data-correct-feedback="" data-wrong-feedback="不对。磁盘里的文件是静态制品；process 强调正在执行。">正确</button>
+    <button class="choice" data-choice data-correct="true" data-correct-feedback="对。Process 的关键是：它是正在运行的实例。" data-wrong-feedback="">错误</button>
+    <div class="feedback" data-feedback></div>
+  </section>
+
+  <h2>06. 真正的过关题</h2>
+  <div class="scenario">
+    <p><strong>不要查资料，用自己的话回答：</strong></p>
+    <p>如果一个项目里有 <em>Worker 的代码文件</em>、电脑上安装了 <em>Node.js</em>、然后你在 <em>PowerShell 里把 Worker 跑起来</em>：</p>
+    <p><strong>这三样东西分别属于什么？它们之间发生了什么关系？</strong></p>
+  </div>
+  <p>把答案直接发给 ChatGPT。老师会根据你的解释判断这一课是否真的学会，并把已经证明掌握的内容写进 <code>learning-records/</code>。如果没过，不会直接进入下一课，而是换一种方式补这一块。</p>
+
+  <h2>这一课只需要记住一个模型</h2>
+  <div class="flow">
+    <div>静态代码</div>
+    <div>Runtime 执行</div>
+    <div>OS 建立 Process</div>
+    <div>程序产生行为</div>
+  </div>
+
+  <p>下一课不会假设你因为“看懂了”就已经掌握；后续还会在 Server、Worker、Docker 和 Deployment 中反复调回这个模型。</p>
+
+  <h2>Reference & Primary Source</h2>
+  <p>快速复习：<a href="../reference/program-process-runtime.html">Program / Process / Runtime Reference</a></p>
+  <p><strong>本课推荐的 primary source：</strong><a href="https://nodejs.org/en/learn/getting-started/introduction-to-nodejs">Node.js — Introduction to Node.js</a>。不用逐字读完；先看开头对 runtime 与 process 的描述即可。</p>
+  <ul>
+    <li><a href="https://learn.microsoft.com/en-us/windows/win32/procthread/processes-and-threads">Microsoft Learn — Processes and Threads</a></li>
+    <li><a href="https://nodejs.org/api/process.html">Node.js — Process API</a></li>
+    <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Event_loop">MDN — JavaScript execution model</a></li>
+  </ul>
+
+  <p class="muted">有任何一句没落地，直接问 ChatGPT。课程目标不是把术语背下来，而是让你能用这个模型解释真实的软件现象。</p>
+</main>
+<script src="../assets/quiz.js"></script>
+</body>
+</html>
