@@ -1,0 +1,54 @@
+name: Vendor Matt Pocock Skills
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/vendor-matt-skills.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Fetch pinned Matt Pocock skills snapshot
+        run: |
+          rm -rf /tmp/matt-skills
+          git clone https://github.com/mattpocock/skills.git /tmp/matt-skills
+          git -C /tmp/matt-skills checkout 5b15a47f2d7150f545fbcacbfe381787fc0230dc
+
+      - name: Copy upstream repository into vendor directory
+        run: |
+          rm -rf vendor/matt-pocock-skills
+          mkdir -p vendor/matt-pocock-skills
+          rsync -a --exclude='.git' /tmp/matt-skills/ vendor/matt-pocock-skills/
+          cat > vendor/matt-pocock-skills/SOURCE.md <<'EOF'
+          # Matt Pocock Skills — Source Record
+
+          - Upstream repository: `mattpocock/skills`
+          - Upstream branch: `main`
+          - Vendored commit: `5b15a47f2d7150f545fbcacbfe381787fc0230dc`
+          - Vendored on: 2026-08-22
+          - Upstream license: MIT
+
+          ## Local policy
+
+          Treat this directory as an upstream snapshot. Do not customize files here in place. Put workspace-specific adaptations in the repository's top-level `skills/` directory and document their source and differences.
+          EOF
+
+      - name: Commit vendored snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add vendor/matt-pocock-skills
+          if git diff --cached --quiet; then
+            echo 'No vendor changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore: vendor Matt Pocock skills snapshot'
+          git push
