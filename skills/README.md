@@ -7,3 +7,4 @@ Do not edit vendored third-party skills in place. If a third-party skill needs c
 ## Available skills
 
 - [`chatgpt-to-codex-handoff`](./chatgpt-to-codex-handoff/SKILL.md) — Use when a ChatGPT conversation needs to hand context, decisions, and next actions to Codex without duplicating repository sources of truth.
+- [`quick-q-and-a`](./quick-q-and-a/SKILL.md) — 当用户说出“快问快答”时，通过一次一个概念、类比和 Teach-back 快速建立理解。
