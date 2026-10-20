@@ -1,35 +1,47 @@
-% S9 — Generation & Knowledge Utilisation
-% Owner: Member D. Planned contribution: 4 compiled Survey pages.
-% This is a scaffold, not a completed literature review.
-% Shared taxonomy: failures in interpretation and use of model-visible evidence;
-% differentiate from upstream absence, retrieval errors, or context truncation.
-
+% S9 evidence-based working draft, 2026-10-20
+% Owner Member D. Page target: four final-layout pages (not yet checked).
+% Citekey metadata in ../references.bib. Stage attribution is conditional.
 \section{Generation and Knowledge Utilisation}
 \label{sec:generation-knowledge-utilisation}
 
 \subsection{Scope and Stage Boundaries}
 \label{subsec:s9-scope}
-% TODO: Define stage input/output and evidence-visibility assumptions.
-% TODO: Distinguish generator failure from S6-S8 upstream failures.
+
+The fourth stage of the working RAG taxonomy concerns what a language model does with the evidence \emph{actually visible} in its input: interpreting passages, reconciling them with parametric knowledge, connecting propositions, and generating grounded claims and citations. This is not equivalent to corpus coverage (Stage~1), the relevance of retrieved candidates (Stage~2), or which passages were selected and arranged for the final prompt (Stage~3). A false or unsupported answer cannot, on its own, establish the stage of origin. In particular, an answer may be unsupported because the required evidence was never supplied, whereas another answer may be erroneous despite sufficient evidence. Joren et al.\ offer a way to distinguish these cases by judging whether the supplied question--context pair contains sufficient information to produce an answer \cite[Secs.~3--4]{joren2025sufficient}.
+
+We distinguish \emph{failure mechanisms} from the \emph{manifestations} visible in responses. Contradictory and unsupported assertions are evaluated against a specified evidence reference; neither uniquely identifies an upstream cause. Attribution problems also differ from factual falsity: a citation can fail to support a true claim, and faithfully following a wrong source may yield a factually wrong claim. Consequently, a defensible Stage~4 analysis requires evidence-visibility checks and careful separation of observed output errors from causal explanations.
 
 \subsection{Failure Mechanisms}
 \label{subsec:s9-mechanisms}
-% TODO: Organise paragraphs by source-supported mechanism:
-% (i) failure to use adequate visible evidence,
-% (ii) conflicts between parametric and external knowledge,
-% (iii) unsupported synthesis/reasoning mistakes,
-% (iv) attribution and unjustified certainty, as evidence permits.
-% Do not present illustrative mechanisms as empirical findings without citations.
+
+\paragraph{Insufficient use of available evidence.}
+Having relevant text in a prompt does not guarantee its effective use in the generated answer. Joren et al.\ define \emph{sufficient context} by asking whether a plausible answer can be derived from the provided question and context, and examine model responses after separating sufficient and insufficient inputs \cite[Secs.~3--4]{joren2025sufficient}. They report that larger proprietary models tend to answer more accurately when context is sufficient but often return incorrect answers instead of abstaining when it is not; smaller open-source models may err or abstain even under sufficient-context conditions. This is important diagnostic evidence: errors under independently checked sufficient context motivate investigation of generator behaviour, whereas errors under insufficient context cannot be assigned wholly to Stage~4. However, sufficient context is not necessarily a \emph{truthful} reference, and the paper's context-sufficiency labels depend on an automatic judge validated on a limited human-labelled sample.
+
+\paragraph{Unreliable knowledge-conflict resolution.}
+When a retrieved passage conflicts with the model's parametric memory, the generator must decide which information to incorporate. In experiments with eight models and four question-answering datasets, Jin et al.\ study conflicts between internal and external knowledge and among truthful, irrelevant, and misleading passages \cite[Secs.~3--4]{jin2024tug}. They identify instances where models retain erroneous internally remembered answers despite correct supplied evidence, and they report sensitivities to repeated evidence and consistency with prior knowledge. These are behavioural patterns under tested conditions, not evidence that language models literally share human cognitive biases.
+
+The converse error also matters: trusting inaccurate retrieved content over reliable internal knowledge. Wang et al.\ analyse 1,000 questions with ten search-result passages each, drawn from NQ, TriviaQA, BioASQ and PopQA \cite[Sec.~3]{wang2025astute}. In their examined knowledge-conflict cases, correct information could lie on either side of the internal--external distinction. Their ASTUTE RAG approach consequently consolidates both knowledge sources with attention to source reliability rather than simply privileging retrieval. The Stage~4 failure mechanism is the \emph{generator's use or adjudication} of presented conflicting evidence; the presence of misleading results itself remains an upstream condition.
+
+\paragraph{Unsupported synthesis and multi-step inference.}
+A generator may combine individually plausible statements into a conclusion not warranted by their joint evidence. Multi-hop questions expose this challenge because several facts must be connected while plausible distractors are rejected. Jin et al.\ report increasing difficulty as the number of conflicting hops rises \cite[Sec.~4]{jin2024tug}. Islam et al.\ investigate evidence integration and distractor resistance in open-source RAG and introduce OPEN-RAG, which combines sparse mixture-of-experts adaptation, contrastive learning and reflection-guided generation \cite[Secs.~2--4]{islam2024openrag}. Their experiments on single- and multi-hop tasks support improvements in the \emph{evaluated system}, but multiple simultaneous changes, including adaptive retrieval, mean the observed gains do not isolate a pure generation-stage mechanism. Similarly, success on an exact-match answer metric does not demonstrate that every intermediate inference was evidence-grounded.
+
+\paragraph{Incorrect attribution and unjustified certainty.}
+The apparent presence of citations does not ensure that each claim is traceable to support. Gao et al.\ introduce ALCE to evaluate correctness, fluency and citation quality in retrieval-supported answer generation \cite[Secs.~2--4]{gao2023alce}. In the paper's ELI5 experiments, even the best examined systems lacked complete citation support for roughly half of outputs under its citation criteria. This is a significant attribution problem, although ALCE evaluates end-to-end systems and does not uniquely localise each defect to Stage~4. Niu et al.\ introduce RAGTruth, with nearly 18,000 manually annotated RAG-generated responses and span-level labels for unsupported or contradictory material \cite[Secs.~2--3]{niu2024ragtruth}. RAGTruth is useful for characterising output manifestations, but its hallucination labels should not be reinterpreted as causal stage labels. Unwarranted certainty also arises when a model offers an apparently definite answer despite inadequate evidence; whether a system should instead abstain depends on its application-specific risk and coverage requirements \cite{joren2025sufficient}.
 
 \subsection{Empirical Evidence and Critical Comparison}
 \label{subsec:s9-comparison}
-% TODO: Compare verified RAG studies' models, tasks, interventions,
-% metrics, baseline choices, controlled variables, and limitations.
-% Do not rank incomparable cross-paper scores.
+
+The studies illuminate complementary, rather than directly comparable, aspects of evidence use. Jin et al.\ manipulate knowledge conflict and examine response preferences \cite{jin2024tug}; Wang et al.\ investigate imperfect real-world search results and source-aware consolidation \cite{wang2025astute}; and Joren et al.\ stratify answers according to the sufficiency of the \emph{model-provided context} \cite{joren2025sufficient}. Together these studies motivate two separate diagnostic checks: was adequate evidence made available, and, conditional on its availability, was it interpreted appropriately? Their different models, question distributions, evidence manipulations and performance measures do not support a pooled prevalence estimate for generation failure.
+
+Intervention studies reinforce this distinction. Self-RAG learns reflection tokens to determine whether retrieval is needed and whether generated segments are supported by passages \cite[Sec.~3]{asai2024selfrag}; OPEN-RAG modifies model architecture and training to handle misleading distractors in complex reasoning \cite[Secs.~3--4]{islam2024openrag}; ASTUTE RAG uses iterative source-aware consolidation for black-box generators \cite[Secs.~4--5]{wang2025astute}; and Jin et al.\ propose conflict-disentangling contrastive decoding \cite[Sec.~5]{jin2024tug}. These approaches differ in model-access requirements, inference procedure, retrieval control and evaluation tasks. Better aggregate accuracy under a particular benchmark supports that specific implementation, not a general causal claim that one failure mechanism has been eliminated.
+
+The choice of metric likewise changes what is observable. ALCE separates citation support from answer correctness \cite{gao2023alce}; RAGTruth distinguishes spans of unsupported and contradicted output \cite{niu2024ragtruth}; and the sufficient-context perspective separates incorrect use of adequate input from limitations of the input itself \cite{joren2025sufficient}. Each provides useful but incomplete diagnostic information. A careful study of generation failures should record the exact evidence shown to the model, distinguish answer truth from passage entailment, inspect multistep inference, and evaluate whether appropriate abstention was possible. A citation mismatch, hallucination label, or improved retrieval metric should never be treated as a stand-alone causal diagnosis.
 
 \subsection{Downstream Effects and Research Implications}
 \label{subsec:s9-downstream}
-% TODO: Separate contradictory/unsupported manifestations from causal origin.
-% TODO: Document confidence, evidence and limits for stage-to-output links.
-% TODO: Send calibrated/abstention/evidence-use intervention results to F;
-% relevant manifestations/cases to E and boundary disputes to C.
+
+Evidence-utilisation failures can surface as contradictions, unsupported elaborations, misleading source attribution or unjustified confidence. A traceable example from RAGTruth concerns ultrasound advice: a generated answer incorrectly presents the broader interval during which 3D ultrasound may be performed as the narrower interval associated with the best images in the provided reference \cite[Table~1]{niu2024ragtruth}. It illustrates a source-misrepresentation \emph{manifestation}; attributing that instance's origin to one particular pipeline stage would require checking the actual model-visible input and generation process. Multi-hop mistakes likewise may be driven by either missing premises or incorrect inference over present premises, and should not be assumed to propagate inevitably from retrieval errors.
+
+For evidence-insufficient questions, abstention can limit unsupported claims. Joren et al.\ combine context-sufficiency indicators and confidence signals in a selective-generation strategy and observe improved accuracy--coverage trade-offs in evaluated settings \cite[Sec.~5]{joren2025sufficient}. Nevertheless, some questions remain answerable from parametric memory even without sufficient retrieved context, while stricter refusal thresholds sacrifice answer coverage. These trade-offs require application- and benchmark-specific comparison rather than unconditional rules about when retrieval, internal memory or abstention is preferable.
+
+In synthesis, the reviewed evidence indicates that Stage~4 reliability requires more than delivering relevant text: models must appropriately select between conflicting knowledge, reason without unsupported transitions, attribute claims to genuinely supporting sources, and calibrate when not to answer. It does not show that every observed contradiction originates in generation, that every citation defect implies a false claim, or that any single intervention uniformly resolves hallucinations. The distinction between sufficient and insufficient context is a useful basis for future mechanism-level experiments. Generation mechanism and uncertain boundary cases should be passed to Member C, documented manifestations to Member E, and evaluated interventions and costs to Member F for S10.
