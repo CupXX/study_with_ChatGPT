@@ -1,26 +1,20 @@
 # RAG Hallucinations Survey — Member D
 
-**Status:** working research and writing scaffold (2026-10-20). No scientific findings or review counts have been validated or drafted here yet.
+**Status (2026-10-20):** first sourced English drafts for S9 and S2 exist. S9 has seven verified published studies and a critical synthesis; S2 contains only the documented Member D search actions and explicitly marked team-wide methodology gaps. Neither section's final ACM page count nor clean LaTeX compilation has yet been established.
 
-This folder contains the individual Survey contribution for Member D (Generation & Knowledge Utilisation) in the *Industry Research* project. It follows the user-provided **RAG Master Draft v2.2**, which is a working plan, not empirical evidence.
+## Ownership
+- `sections/S9.tex`: Generation & Knowledge Utilisation, target 4 final Survey pages.
+- `sections/S2.tex`: Review Methodology / PRISMA-aware reporting, target 2 final Survey pages.
+- `references.bib`: 8 referenced publications (7 RAG empirical studies + PRISMA 2020 statement), with checked conference/publisher metadata.
+- `evidence_matrix.csv`: source-linked seven-paper study evidence and methodological limitations.
+- `research_notes.md`: research decisions, actual Stage 4 search notes, outstanding team requests, and handoffs to C/E/F.
+- `main.tex`: provisional standalone acmart manuscript preview wrapper (not the final shared ACM mode).
 
-## Ownership and deliverables
+## How to work
+1. Discuss research choices with the member in ChatGPT; commit approved content to this GitHub folder.
+2. Keep claims tied to original sources. Mechanism ≠ observed manifestation; a whole-system RAG result does not by itself prove generation-stage causation.
+3. Do not fabricate screening counts, team search history, DOIs, results, dates, or team approval.
+4. Before final submission, remove or resolve all [PROJECT LOG NEEDED] / [TEAM DECISION] markers and confirm shared taxonomy terminology.
+5. At team integration, merge bibliography entries into the canonical shared `references.bib`, include the two `sections/*.tex` files and confirm title, citations, formatting and compilation in Overleaf.
 
-- `sections/S9.tex` — Stage 4, Generation & Knowledge Utilisation (target: 4 compiled pages).
-- `sections/S2.tex` — Review Methodology / PRISMA-aware reporting (target: 2 compiled pages; relies on real records from all six researchers).
-- `references.bib` — verified bibliography entries for this member, to merge into the team's single bibliography.
-- `evidence_matrix.csv` — source-linked research evidence and limitations.
-- `research_notes.md` — research decisions, search log, questions, and cross-member handoffs.
-- `main.tex` — optional standalone compilation shell, not the shared group template.
-
-## Working agreement
-
-1. Discuss choices in ChatGPT, then write confirmed text to this GitHub folder.
-2. Compare studies by **mechanism and conditions**, not paper-by-paper summaries.
-3. Record original paper evidence and exact source locations before claiming results.
-4. Do not invent PRISMA counts, search history, citations, results, or team decisions.
-5. Distinguish generation faults from source/index, retrieval, and context-construction faults.
-6. Handoff generator mechanism ambiguities to C; manifestations/cases to E; interventions to F; and collect search logs from everyone for S2.
-7. Treat `main.tex` as provisional until the group confirms ACM template mode and Overleaf integration.
-
-**Visibility notice:** this repository is currently PUBLIC; do not commit confidential team records or unpublished material without considering access permissions.
+**Visibility warning:** the parent GitHub repository was public when this workspace was created. Verify permissions before committing private team information.
