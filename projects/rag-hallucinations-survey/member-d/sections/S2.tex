@@ -1,25 +1,24 @@
-% S2 — Review Methodology and PRISMA-aware Reporting
-% Owner: Member D. Planned contribution: 2 compiled Survey pages.
-% The team must supply ACTUAL search/screening records before drafting factual methods.
-% This scaffold deliberately makes no claims about performed searches or counts.
-
+% S2 — Member D methodological draft, 2026-10-20.
+% IMPORTANT: At present the team-wide study selection record is unavailable.
+% Paragraphs about team-level conduct must be completed from documented events.
+% Square-bracket annotations are INTERNAL TODOs, not submission text.
 \section{Review Methodology}
 \label{sec:review-methodology}
 
-\subsection{Review Scope and Study Identification}
-% [PROJECT LOG NEEDED] Actual sources, queries, search dates, coverage.
-% Distinguish primary RAG studies, background surveys and LLM-only context.
+\subsection{Review Scope and Literature Identification}
+This survey addresses the causes and manifestations of hallucination across the four working stages of retrieval-augmented generation (RAG), together with available detection and mitigation evidence. The stage framework is an organising device for research synthesis rather than a claim that every observable error has one uniquely identifiable origin. To support transparent reporting, the review plan draws on relevant elements of PRISMA 2020 \cite{page2021prisma}, while recognising that use of a reporting guideline does not by itself establish formal systematic-review compliance.
 
-\subsection{Eligibility, Screening and Full-Text Verification}
-% [PROJECT LOG NEEDED] Actual inclusion/exclusion rules, deduplication,
-% screening stages and accessible full-text study list.
-% No invented PRISMA flow counts.
+The preliminary literature identification documented for the \emph{Generation and Knowledge Utilisation} chapter used targeted web searches on 20 October 2026, including searches restricted to the ACL Anthology and searches for original ICLR conference papers. Queries included the terms \emph{RAG}, \emph{knowledge conflict}, \emph{citation}, \emph{generation}, \emph{multi-hop reasoning}, \emph{sufficient context}, and \emph{abstention}; the actual example query strings and source links are retained in the Member D search log. This process identified seven papers whose official proceedings records and original full texts were consulted for the present chapter. The search was targeted, not demonstrated to be exhaustive. [PROJECT LOG NEEDED: Document the other five authors' actual databases or platforms, full queries, search dates, date limits, and any survey-first discovery or citation-chaining actually performed; then replace this chapter-specific description with the complete team procedure.]
 
-\subsection{Evidence Extraction and Taxonomy Coding}
-% [TEAM DECISION] Confirm shared extraction fields and assignment protocol
-% with Member C; multiple origins and uncertainty are allowed.
+\subsection{Eligibility, Screening and Study Set}
+In the preliminary Stage~4 work, sources were considered for their ability to support identifiable claims about how RAG systems use or fail to use retrieved material during generation. Conference or publisher metadata was checked, and relevant original-paper sections were examined to establish experimental setups, findings, and limitations. The resulting seven-paper \emph{chapter evidence set} contains mechanism studies, generation-side interventions, and supporting evaluation resources. An end-to-end RAG benchmark was not treated as direct proof of a generation-specific causal origin, and general language-model evidence was not silently relabelled as RAG-specific evidence.
 
-\subsection{Evidence Synthesis and Review Limitations}
-% [PROJECT LOG NEEDED] Actual comparison process, team checking,
-% incomplete search histories and methodological limitations.
-% PRISMA 2020 is reporting guidance, not compliance by label.
+[PROJECT LOG NEEDED: Insert and verify the team's actual eligibility rules, duplicate removal approach, title/abstract or full-text screening process, exclusion reasons, included-paper list, any inaccessible full texts, and number of reviewers per screening stage. The seven Stage~4 citations are NOT the whole survey's study count.] No retrospective PRISMA screening totals or flow diagram should be presented without recorded underlying counts.
+
+\subsection{Evidence Extraction, Stage Coding and Synthesis}
+The working evidence record contains source metadata and availability, task and RAG configuration, primary and possible secondary stages, proposed mechanism, response manifestation, supported result, experimental setting, limitation and precise paper section or page. For the Stage~4 chapter, the extraction entries and source-linked notes are preserved in the member's evidence matrix. Coding explicitly distinguishes mechanisms from observed contradictory or unsupported outputs. Multiple contributing stages and unresolved origins remain possible; a negative end-to-end outcome alone is not sufficient for single-stage attribution. [TEAM DECISION / PROJECT LOG NEEDED: Confirm with Member C how the team actually harmonised definitions, resolved disagreements and validated cross-member coding.]
+
+The planned comparative logic is mechanism-centred, weighing studies by their methods, question distributions, models, metrics, baselines and evidence visibility rather than presenting one paper after another. For any claim about mitigation effectiveness, reported improvement must remain tied to the study's evaluated conditions. [PROJECT LOG NEEDED: Record the synthesis and checking procedure the team actually executed; identify independent reviews or revisions only when documented.]
+
+\subsection{Reporting Limits}
+The existing record establishes a traceable Stage~4 search-and-extraction activity, but not a complete historical team-wide search, eligibility flow, or exhaustive review corpus. The final methodology should disclose any remaining gaps and the possible effects of targeted source discovery, benchmark concentration, model selection and cross-study evaluation differences. This section is therefore an \emph{incomplete working draft pending team evidence}, not a claim of completed PRISMA 2020 compliance.
