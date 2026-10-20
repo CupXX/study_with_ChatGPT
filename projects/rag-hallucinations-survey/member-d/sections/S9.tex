@@ -31,6 +31,28 @@ The apparent presence of citations does not ensure that each claim is traceable 
 \subsection{Empirical Evidence and Critical Comparison}
 \label{subsec:s9-comparison}
 
+Table~\ref{tab:s9-evidence} compares what the included studies directly evaluate, while keeping identification limitations visible.
+
+\begin{table}[t]
+\centering
+\caption{Selected evidence relevant to generation-stage failure mechanisms. Findings are study-conditional; no row establishes a unique stage origin solely from end-to-end performance.}
+\label{tab:s9-evidence}
+\small
+\begin{tabular}{@{}p{0.19\linewidth}p{0.32\linewidth}p{0.39\linewidth}@{}}
+\toprule
+Study & Relevant signal & Main attribution limit \\
+\midrule
+Jin et al.\ \cite{jin2024tug} & Model choice under internal--external evidence conflict & Controlled and partly constructed conflicts; preferences vary by setup \\
+Wang et al.\ \cite{wang2025astute} & Source reconciliation with imperfect search results & Retrieval quality and generator consolidation both contribute \\
+Joren et al.\ \cite{joren2025sufficient} & Errors stratified by context sufficiency & Sufficiency judged automatically; insufficient context can still allow memory-based answers \\
+Islam et al.\ \cite{islam2024openrag} & Multi-hop use of evidence and distractor resistance & Architecture, training and retrieval policy changed together \\
+Gao et al.\ \cite{gao2023alce} & Claim-level citation support & End-to-end metric does not isolate generation cause \\
+Niu et al.\ \cite{niu2024ragtruth} & Contradictory and unsupported output spans & Manifestation annotations are not mechanism labels \\
+Asai et al.\ \cite{asai2024selfrag} & Reflection-based relevance and support decisions & Intervention spans retrieval control and generation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 The studies illuminate complementary, rather than directly comparable, aspects of evidence use. Jin et al.\ manipulate knowledge conflict and examine response preferences \cite{jin2024tug}; Wang et al.\ investigate imperfect real-world search results and source-aware consolidation \cite{wang2025astute}; and Joren et al.\ stratify answers according to the sufficiency of the \emph{model-provided context} \cite{joren2025sufficient}. Together these studies motivate two separate diagnostic checks: was adequate evidence made available, and, conditional on its availability, was it interpreted appropriately? Their different models, question distributions, evidence manipulations and performance measures do not support a pooled prevalence estimate for generation failure.
 
 Intervention studies reinforce this distinction. Self-RAG learns reflection tokens to determine whether retrieval is needed and whether generated segments are supported by passages \cite[Sec.~3]{asai2024selfrag}; OPEN-RAG modifies model architecture and training to handle misleading distractors in complex reasoning \cite[Secs.~3--4]{islam2024openrag}; ASTUTE RAG uses iterative source-aware consolidation for black-box generators \cite[Secs.~4--5]{wang2025astute}; and Jin et al.\ propose conflict-disentangling contrastive decoding \cite[Sec.~5]{jin2024tug}. These approaches differ in model-access requirements, inference procedure, retrieval control and evaluation tasks. Better aggregate accuracy under a particular benchmark supports that specific implementation, not a general causal claim that one failure mechanism has been eliminated.
