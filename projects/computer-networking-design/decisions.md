@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-21  
-> **Status:** Design in progress — decisions confirmed through **Decision 6.3**  
+> **Status:** Design in progress — decisions confirmed through **Decision 6.4**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -92,7 +92,7 @@ The following VLSM addresses were laid out and carried forward into routing desi
 
 **Not yet fixed:**
 - Exact default gateway and endpoint/management IP addresses; using the first usable IP for each LAN gateway is a **proposed convention**, not yet a final interface allocation.
-- The ISP-facing public IP/interface plan and any NAT configuration. The assignment mentions the public block `203.115.0.0/28`, but no addresses have been assigned from it yet.
+- **Chosen NAT strategy:** PAT for outbound corporate user traffic plus Static NAT for separately published HQ Web and Mail Servers (Decision 6.4). Specific public address assignments, ISP-facing interfaces, NAT ACLs, and external-service access policies remain undecided. The assignment mentions public address block `203.115.0.0/28`.
 - DHCP vs static address assignment for individual devices.
 - Free addresses in the allocated /18 pool are reserved for future design, without a yet-defined expansion plan.
 
@@ -105,7 +105,7 @@ The following VLSM addresses were laid out and carried forward into routing desi
   - Each branch can use a default route pointing towards HQ.
   - HQ will need paths to the Branch A and Branch B LANs through their corresponding WAN links.
   - HQ's own connected VLAN networks will be routed via the chosen Router-on-a-Stick subinterfaces.
-  - HQ's Internet default route, ISP link, and any NAT are pending design decisions.
+  - HQ's Internet default route and ISP link are not configured yet; NAT strategy (PAT plus Static NAT) is confirmed in Decision 6.4, but its exact interface/IP configuration is pending.
 - **Testing:** Verify inter-office host connectivity and router-to-router ping, along with any other assignment-required evidence.
 
 ## Decision 6.2 — WAN connection model ✅ Confirmed: Serial WAN
@@ -129,9 +129,20 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Tradeoff:** Inter-VLAN traffic shares a router-facing trunk and the router's forwarding capacity, creating a possible performance bottleneck. VLAN separation itself is not an access-control policy.
 - **Still pending:** Subinterface names, gateway IPs, switch/router device models, VLAN-to-port assignments, and whether any ACL is required. Do not treat the example layout as a finished Packet Tracer configuration.
 
+## Decision 6.4 — Internet access and NAT strategy ✅ Confirmed: PAT + Static NAT
+
+- **Selected:** Option B — **PAT (Port Address Translation) + Static NAT** at the headquarters Internet edge.
+- **Outbound Internet access:** Clients in HQ and both branches are intended to access the Internet via HQ, with PAT allowing multiple private client IP addresses to share an outside public address. Branch-to-HQ routing must support this central egress.
+- **Inbound published services:** Provide separate Static NAT public-to-private address mappings for the corporate **Web Server** and **Mail Server**, both hosted within HQ Server VLAN 30.
+- **Public address resource:** The assignment-specified `203.115.0.0/28` block will be used for public-facing design; **no individual public IP assignments have been confirmed**.
+- **Business rationale:** A digital consulting SME needs outward Internet access for staff and may need externally accessible corporate website and email services.
+- **Security caveat:** Static NAT alone does not restrict inbound traffic to particular protocols/ports. Access controls, server security and service exposure must be designed separately. Do not claim that NAT alone secures the servers.
+- **Implementation still pending:** ISP-side simulated topology, HQ router outside interface/address and default route, precise PAT/static NAT mappings, server private IPs, DNS/MX considerations, and end-to-end internal/external testing.
+- **Simulation caveat:** Packet Tracer Internet access is a model of external connectivity; it does not establish genuine public Internet availability.
+
 ## Open design questions — not yet decided
 
-1. **Decision 6.4 — Internet edge:** ISP-facing subnet/addressing, default route, NAT/PAT design.
+1. **Decision 6.5 — ISP/Internet simulation:** Decide how to model and verify an external network and NAT behaviour in Packet Tracer (then specify public IPs and HQ default route).
 2. **Services:** Exact placement and IPs for Web/Mail/DNS/DHCP; naming and access requirements.
 3. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
 4. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
@@ -149,3 +160,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-21 | Static Routing for three sites | Confirmed |
 | 2026-10-21 | Serial WAN links for HQ–Branch A and HQ–Branch B | Confirmed |
 | 2026-10-21 | Router-on-a-Stick at HQ for VLANs 10/20/30/40 | Confirmed |
+| 2026-10-22 | PAT for staff outbound traffic and separate Static NAT for Web and Mail servers | Confirmed |
