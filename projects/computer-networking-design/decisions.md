@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-22  
-> **Status:** Design in progress — decisions confirmed through **Decision 7.1**  
+> **Status:** Design in progress — decisions confirmed through **Decision 7.2**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -177,12 +177,22 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **To specify later:** Actual gateway/static assignments, per-pool exclusion ranges and available DHCP ranges, DNS service address/options, leases and Packet Tracer verification. Branch office APs may share the branch LAN; this remains subject to final wireless design.
 - **Security note:** DHCP makes administration easier but does not itself enforce device or user access restrictions.
 
+## Decision 7.2 — DNS server placement ✅ Confirmed: Dedicated internal DNS Server
+
+- **Selected:** Option B — add a **separate DNS Server** at HQ, alongside existing Web and Mail Servers, rather than co-hosting DNS on the Web Server.
+- **Location/network:** HQ server room (Floor 2), **Server VLAN 30**, currently allocated subnet `10.0.0.192/28`. Use a **static private IP** for DNS, to be assigned in the detailed device address plan.
+- **Purpose:** Offer central internal name resolution for staff at HQ and both branch offices. Client DHCP pools will distribute this server's IP using the DNS option; branch routing must permit DNS queries to reach the HQ Server VLAN.
+- **Service inventory at HQ (confirmed):** (1) Web Server, (2) Mail Server, (3) dedicated internal DNS Server. Three servers plus gateway fit within the server subnet's 14 usable host addresses.
+- **Rationale:** Separates network name service from the externally published Web Server, avoids a shared Web/DNS single-device dependency, and simplifies service-specific administration and internal-only exposure.
+- **Boundary:** Internal DNS **is not automatically published** to external users. If Packet Tracer's external test device needs domain-name access to the public static NAT addresses, design an appropriate **separate external DNS simulation / resolution method** later. Do not expose the internal DNS server simply because web and mail have public static NAT mappings.
+- **Still pending:** DNS server static IP, domain/hostnames, A/MX records as supported by Packet Tracer, DNS settings in DHCP pools, and inter-office resolution tests. No DNS records or exact server addresses are approved yet.
+
 ## Open design questions — not yet decided
 
-1. **Decision 7.2 — DNS placement:** Decide whether DNS runs on an existing HQ server or a separate DNS server, while keeping public DNS simulation considerations distinct.
-2. **Services:** Exact placement and internal IPs for Web/Mail and DNS; naming, service options and access requirements (DHCP providers selected in Decision 7.1).
+1. **Decision 7.3 — Wireless access policy:** Decide whether to provide only company-staff Wi-Fi or add a separate guest WLAN that needs additional segmentation and security.
+2. **Services:** Assign the Web/Mail/DNS servers' fixed internal IPs, choose internal naming/DNS records and test services (DHCP providers confirmed in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
-4. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
+4. **Wireless:** Final SSIDs, WLAN authentication/security, client IP addressing, AP placement and VLAN association at HQ/branches.
 5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
 6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
 7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
@@ -201,3 +211,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-22 | PAT for staff outbound traffic and separate Static NAT for Web and Mail servers | Confirmed |
 | 2026-10-22 | ISP Router + external test device simulation; preliminary `203.115.0.0/28` IP allocation | ISP simulation confirmed; addresses provisional |
 | 2026-10-22 | Hybrid IP assignment: DHCP for PCs/wireless, static for router/server/printer/AP infrastructure; site routers provide DHCP | Confirmed |
+| 2026-10-22 | Dedicated internal DNS server at HQ in Server VLAN 30; IP/naming still pending | Confirmed |
