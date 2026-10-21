@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-22  
-> **Status:** Design in progress — decisions confirmed through **Decision 7.4**  
+> **Status:** Design in progress — decisions confirmed through **Decision 7.5**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -40,7 +40,7 @@
 - Each site uses a router and local switched network; HQ contains two office floors and centrally located Web/Mail services.
 - PCs, wireless laptop connectivity, network printers, a corporate Web Server, and a corporate Mail Server are part of the assignment design requirements.
 - Exact router/switch models, interface counts, cabling/WAN simulation method, Wi-Fi configuration, and additional services are **pending**.
-- Earlier *preliminary* device counts (3 routers, 4 switches, 4 APs, 4 printers, 2 servers) are **not final procurement/device-table decisions**; they must be validated against the topology and Packet Tracer.
+- Earlier *preliminary* device counts (3 company routers, 4 switches, 4 APs, 4 printers, 2 servers) must not be treated as a final device table: **4 APs are now confirmed** (Decision 7.5); three HQ servers (Web/Mail/DNS) are confirmed (Decision 7.2), plus a separate ISP router for simulation (Decision 6.5). Switch/printer models and counts remain to be verified.
 
 ## Decision 4 — Network segmentation ✅ Confirmed: Option B / Moderate Segmentation
 
@@ -204,14 +204,26 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Limitations:** A shared PSK does not offer per-user access revocation or strong accountability; a stolen/disclosed key requires rotation and device updates. WPA2-Personal is not presented as the ideal long-term security choice for every real enterprise.
 - **Future enhancement:** Consider WPA2/WPA3-Enterprise with per-user authentication and centrally managed identities if the organisation grows and hardware supports it.
 - **Security handling:** Use a sufficiently strong demonstration password when implementing and do **not** store real production wireless credentials in this public GitHub repository. The assignment-mandated `cisco123` device-password convention must not be assumed to be the Wi-Fi PSK unless the assessment explicitly says so.
-- **Still pending:** AP count/placement and compatible Packet Tracer device model(s), SSID names, whether PSKs are shared between offices, the exact demonstration PSK, and verified client connections.
+- **Still pending:** Final AP positioning/models and compatibility in Packet Tracer, SSID names, whether PSKs are shared between offices, the exact demonstration PSK, and verified client connections. The quantity and floor/branch allocation of APs are confirmed in Decision 7.5.
+
+## Decision 7.5 — Wireless AP count and area allocation ✅ Confirmed: Four Access Points
+
+- **Selected:** Option A — use **4 wireless Access Points (APs)** across the three business sites.
+- **HQ Adelaide CBD:** 1 AP on Floor 1 and 1 AP on Floor 2 (total 2 HQ APs).
+- **Branch A Norwood:** 1 AP in the single-floor office.
+- **Branch B Mawson Lakes:** 1 AP in the single-floor office.
+- **Staff-only security:** All four support employee wireless connectivity with WPA2-Personal (Decisions 7.3–7.4). No Guest Wi-Fi or guest VLAN is planned.
+- **Network placement:** Both HQ floors' wireless clients are intended to join **HQ VLAN 40 (`10.0.0.0/26`)**, despite being on different floors; switch/AP connections must convey that VLAN correctly. Each branch's AP and wireless clients use that branch's local /27 LAN, consistent with Decision 4.
+- **Rationale:** One AP per small office floor/branch gives a practical minimal design with low hardware/configuration overhead for Packet Tracer. It matches the current modest office size and avoids unnecessary simulated wireless capacity.
+- **Assumption/limitation:** Single-AP coverage of each area is **not guaranteed**, because actual office dimensions, attenuation, interference and device capacity are unknown. A real deployment would require a wireless site survey and may need more APs.
+- **Still pending:** Specific Packet Tracer AP models, exact physical placement/ports, SSID and PSK plan, static AP management IPs, VLAN/switch access-port mapping, successful DHCP/wireless tests. AP models must be checked for compatible WPA2-Personal and any necessary wired/VLAN configuration.
 
 ## Open design questions — not yet decided
 
-1. **Decision 7.5 — AP placement:** Decide how many wireless access points to place across the two HQ floors and two branches (then check Packet Tracer hardware capability).
+1. **Decision 8.1 — Security/ACL scope:** Choose how to limit external access to the public Web/Mail servers and whether to add finer internal server access restrictions while preserving required host-to-host ping connectivity.
 2. **Services:** Assign the Web/Mail/DNS servers' fixed internal IPs, choose internal naming/DNS records and test services (DHCP providers confirmed in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
-4. **Wireless:** Final staff SSIDs, WPA2-PSK settings, client IP addressing, AP placement/model compatibility and VLAN association at HQ/branches. No guest WLAN is planned.
+4. **Wireless:** Confirmed 4 APs by floor/site; final staff SSIDs, WPA2-PSK settings, client IP addressing, precise mounting locations, model compatibility and VLAN/port assignments remain pending. No guest WLAN.
 5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
 6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
 7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
@@ -233,3 +245,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-22 | Dedicated internal DNS server at HQ in Server VLAN 30; IP/naming still pending | Confirmed |
 | 2026-10-22 | Staff-only Wi-Fi; no guest SSID/VLAN; HQ wireless VLAN 40 retained | Confirmed |
 | 2026-10-22 | WPA2-Personal (PSK) for employee wireless authentication; WLAN implementation settings pending | Confirmed |
+| 2026-10-22 | Four APs: HQ Floor 1 ×1, HQ Floor 2 ×1, Branch A ×1, Branch B ×1 | Confirmed |
