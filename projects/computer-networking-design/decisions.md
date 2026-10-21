@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-22  
-> **Status:** Design in progress — decisions confirmed through **Decision 7.5**  
+> **Status:** Design in progress — decisions confirmed through **Decision 8.1**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -218,13 +218,23 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Assumption/limitation:** Single-AP coverage of each area is **not guaranteed**, because actual office dimensions, attenuation, interference and device capacity are unknown. A real deployment would require a wireless site survey and may need more APs.
 - **Still pending:** Specific Packet Tracer AP models, exact physical placement/ports, SSID and PSK plan, static AP management IPs, VLAN/switch access-port mapping, successful DHCP/wireless tests. AP models must be checked for compatible WPA2-Personal and any necessary wired/VLAN configuration.
 
+## Decision 8.1 — Network access control policy ✅ Confirmed: Basic ACL
+
+- **Selected:** Option A — **Basic ACL security scope**, rather than extensive role-based/internal-department ACLs.
+- **Goal:** Apply a limited, justified **extended ACL** policy at the HQ Internet edge to control access from the simulated external network to the publicly mapped corporate **Web and Mail Servers**. Permit the necessary Web/Mail service traffic only; define exact TCP/UDP ports once the services are configured.
+- **Internal connectivity:** Keep normal staff access to Web/Mail/DNS services and preserve required inter-office and inter-VLAN **host-to-host ping** reachability for the assignment. Do **not** configure an indiscriminate deny that breaks the rubric's any-host ping checks.
+- **PAT interaction:** Cisco IOS ACLs are stateless and NAT plus interface direction affects which source/destination addresses the rules see. Verify NAT order/return traffic in Packet Tracer; avoid assuming an inbound `deny ip any any` is safe without explicit testing of outbound PAT flows and their replies.
+- **Reason:** Focuses on relevant external attack exposure and operational reliability for a small three-site firm, without introducing many fragile role-specific rules.
+- **Limitations:** This is **not** full least-privilege/role-based access control. Separate controls such as host firewalls, MFA, server patching and later identity-based restrictions may still be needed in a real deployment.
+- **Still pending:** Actual ACL entries, rule placement/direction, service ports, server private/public mapping validation, and tests demonstrating both authorised access and blocked unsolicited external access. ACL capability and interaction with PAT/Static NAT must be validated on the chosen Packet Tracer router.
+
 ## Open design questions — not yet decided
 
-1. **Decision 8.1 — Security/ACL scope:** Choose how to limit external access to the public Web/Mail servers and whether to add finer internal server access restrictions while preserving required host-to-host ping connectivity.
+1. **Decision 8.2 — Switch architecture:** Decide whether to use one Layer 2 access switch per HQ floor/branch or introduce an extra dedicated HQ distribution switch.
 2. **Services:** Assign the Web/Mail/DNS servers' fixed internal IPs, choose internal naming/DNS records and test services (DHCP providers confirmed in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
 4. **Wireless:** Confirmed 4 APs by floor/site; final staff SSIDs, WPA2-PSK settings, client IP addressing, precise mounting locations, model compatibility and VLAN/port assignments remain pending. No guest WLAN.
-5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
+5. **Security:** Basic edge ACL scope confirmed; detailed safe inbound service filtering, NAT return traffic and required any-host ping must be verified in Packet Tracer.
 6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
 7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
 
@@ -246,3 +256,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-22 | Staff-only Wi-Fi; no guest SSID/VLAN; HQ wireless VLAN 40 retained | Confirmed |
 | 2026-10-22 | WPA2-Personal (PSK) for employee wireless authentication; WLAN implementation settings pending | Confirmed |
 | 2026-10-22 | Four APs: HQ Floor 1 ×1, HQ Floor 2 ×1, Branch A ×1, Branch B ×1 | Confirmed |
+| 2026-10-22 | Basic extended ACL scope focused on public Web/Mail access while preserving internal any-host ping | Confirmed; exact rules pending |
