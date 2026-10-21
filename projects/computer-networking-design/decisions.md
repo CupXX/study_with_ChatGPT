@@ -132,11 +132,11 @@ The following VLSM addresses were laid out and carried forward into routing desi
 ## Open design questions — not yet decided
 
 1. **Decision 6.4 — Internet edge:** ISP-facing subnet/addressing, default route, NAT/PAT design.
-3. **Services:** Exact placement and IPs for Web/Mail/DNS/DHCP; naming and access requirements.
-4. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
-5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
-6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
-7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
+2. **Services:** Exact placement and IPs for Web/Mail/DNS/DHCP; naming and access requirements.
+3. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
+4. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
+5. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
+6. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
 
 ## Decision history
 
