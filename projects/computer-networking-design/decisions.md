@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-21  
-> **Status:** Design in progress — decisions confirmed through **Decision 6.4**  
+> **Status:** Design in progress — decisions confirmed through **Decision 6.5**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -137,17 +137,43 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Public address resource:** The assignment-specified `203.115.0.0/28` block will be used for public-facing design; **no individual public IP assignments have been confirmed**.
 - **Business rationale:** A digital consulting SME needs outward Internet access for staff and may need externally accessible corporate website and email services.
 - **Security caveat:** Static NAT alone does not restrict inbound traffic to particular protocols/ports. Access controls, server security and service exposure must be designed separately. Do not claim that NAT alone secures the servers.
-- **Implementation still pending:** ISP-side simulated topology, HQ router outside interface/address and default route, precise PAT/static NAT mappings, server private IPs, DNS/MX considerations, and end-to-end internal/external testing.
+- **Implementation still pending:** Exact HQ and ISP router interface assignments and default routes, individual PAT/static NAT mappings, server private IPs, DNS/MX considerations, and end-to-end internal/external testing. The ISP simulation model has been selected in Decision 6.5.
 - **Simulation caveat:** Packet Tracer Internet access is a model of external connectivity; it does not establish genuine public Internet availability.
+
+## Decision 6.5 — ISP simulation ✅ Confirmed: ISP Router + External Test Device
+
+- **Selected:** Option A — model an Internet Service Provider using a **separate ISP Router** connected to the HQ Router, plus an **external test PC or server** on an ISP-side test LAN.
+- **Purpose:** Demonstrate that PCs at HQ and both branches can access an external destination through HQ PAT, and that an external host can reach the separately mapped corporate Web and Mail Servers via static NAT where the simulated application protocols permit.
+- **Flow:** Corporate LANs/branches → HQ Router (central Internet gateway, PAT/static NAT) → ISP Router → external test device. The ISP router is a simulation component, not a fourth company office.
+- **Rationale:** Clear, testable, and simpler to troubleshoot than adding a Packet Tracer Cloud device.
+- **Internal architecture unchanged:** Static routes and the two Serial WAN links stay in place. The HQ–ISP path uses a separate Ethernet interface where the chosen router model supports it.
+- **Public pool:** Use assignment-specified `203.115.0.0/28` for the ISP–HQ public-facing design. Specific addresses below are a **working allocation to validate in Packet Tracer**, rather than final tested settings.
+- **Real-world caveat:** This lab's ISP/external network is simulated and is not actual connectivity to the live Internet.
+
+### Working public-side address allocation (not yet configured/tested)
+
+| Purpose | Working address | Notes |
+|---|---|---|
+| HQ–ISP shared public-facing subnet | `203.115.0.0/28` | 14 usable addresses: `.1`–`.14`; network `.0`, broadcast `.15` |
+| ISP Router's interface toward HQ | `203.115.0.1/28` | Candidate next hop for HQ default route |
+| HQ Router's outside Ethernet interface / outbound PAT address | `203.115.0.2/28` | Candidate public address for PAT overload |
+| Web Server Static NAT outside/global IP | `203.115.0.3` | Tentatively map to private Web Server in VLAN 30 |
+| Mail Server Static NAT outside/global IP | `203.115.0.4` | Tentatively map to private Mail Server in VLAN 30 |
+
+- These NAT global IPs are planned from the **same directly connected public subnet**; validate NAT behaviour, relevant ARP handling, public test routes, and supported Packet Tracer router features before freezing the design.
+- The external test LAN requires a **separate, non-overlapping network**, with final router/host addresses to be set during topology implementation. Do not incorrectly reuse the corporate `10.0.0.0/18` or public `203.115.0.0/28` pool for that separate LAN.
+- The public website/email test must also include service-level configuration and relevant safe inbound traffic control, not just an ICMP ping.
+- Server internal IPs and the exact NAT/routing CLI are **not yet decided**.
 
 ## Open design questions — not yet decided
 
-1. **Decision 6.5 — ISP/Internet simulation:** Decide how to model and verify an external network and NAT behaviour in Packet Tracer (then specify public IPs and HQ default route).
-2. **Services:** Exact placement and IPs for Web/Mail/DNS/DHCP; naming and access requirements.
-3. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
-4. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
-5. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
-6. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
+1. **Decision 7.1 — Client address assignment:** DHCP for PCs/wireless vs manual static IPs, plus fixed addressing for infrastructure.
+2. **Services:** Exact placement and internal IPs for Web/Mail/DNS/DHCP; naming and access requirements.
+3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
+4. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
+5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
+6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
+7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
 
 ## Decision history
 
@@ -161,3 +187,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-21 | Serial WAN links for HQ–Branch A and HQ–Branch B | Confirmed |
 | 2026-10-21 | Router-on-a-Stick at HQ for VLANs 10/20/30/40 | Confirmed |
 | 2026-10-22 | PAT for staff outbound traffic and separate Static NAT for Web and Mail servers | Confirmed |
+| 2026-10-22 | ISP Router + external test device simulation; preliminary `203.115.0.0/28` IP allocation | ISP simulation confirmed; addresses provisional |
