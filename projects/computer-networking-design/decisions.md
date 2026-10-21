@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-22  
-> **Status:** Design in progress — decisions confirmed through **Decision 7.3**  
+> **Status:** Design in progress — decisions confirmed through **Decision 7.4**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -194,14 +194,24 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Branches:** Provide staff wireless access using their respective branch LANs under the current simplified design, subject to final AP capability and cabling checks. Do not invent additional branch guest VLANs.
 - **Reason:** Reduces SSID/VLAN/ACL/DHCP complexity, avoids potentially conflicting guest isolation vs the assignment's all-host ping checks, and keeps the deliverable focused on reliable core networking.
 - **Tradeoff:** Visiting customers are not offered a dedicated Internet-only wireless network; guest isolation can be a future enhancement if the business later requires it.
-- **Pending:** Employee wireless authentication/encryption choice (Decision 7.4), SSID names, exact AP counts/models/placement, wireless settings, and connectivity/security tests. Staff-only Wi-Fi does **not** mean wireless access should be left open or unencrypted.
+- **Pending:** SSID names, exact AP counts/models/placement, WPA2-Personal configuration details, and wireless connectivity/security tests. Staff-only Wi-Fi does **not** mean wireless access should be left open or unencrypted.
+
+## Decision 7.4 — Staff Wi-Fi security ✅ Confirmed: WPA2-Personal (PSK)
+
+- **Selected:** Option A — **WPA2-Personal**, using a pre-shared key (PSK) to authenticate company employee wireless devices. Avoid an open or unencrypted staff WLAN.
+- **Where applied:** Staff WLANs at HQ and both branches; HQ wireless clients continue to use VLAN 40, while branch wireless clients share their site's office LAN unless later changed.
+- **Rationale:** Simple to configure and demonstrate in Cisco Packet Tracer without deploying a separate RADIUS/AAA identity server, proportionate to the exercise and current organisation size.
+- **Limitations:** A shared PSK does not offer per-user access revocation or strong accountability; a stolen/disclosed key requires rotation and device updates. WPA2-Personal is not presented as the ideal long-term security choice for every real enterprise.
+- **Future enhancement:** Consider WPA2/WPA3-Enterprise with per-user authentication and centrally managed identities if the organisation grows and hardware supports it.
+- **Security handling:** Use a sufficiently strong demonstration password when implementing and do **not** store real production wireless credentials in this public GitHub repository. The assignment-mandated `cisco123` device-password convention must not be assumed to be the Wi-Fi PSK unless the assessment explicitly says so.
+- **Still pending:** AP count/placement and compatible Packet Tracer device model(s), SSID names, whether PSKs are shared between offices, the exact demonstration PSK, and verified client connections.
 
 ## Open design questions — not yet decided
 
-1. **Decision 7.4 — Employee Wi-Fi authentication:** Choose a supported staff WLAN authentication/encryption method for Packet Tracer (e.g., WPA2-Personal vs WPA2-Enterprise).
+1. **Decision 7.5 — AP placement:** Decide how many wireless access points to place across the two HQ floors and two branches (then check Packet Tracer hardware capability).
 2. **Services:** Assign the Web/Mail/DNS servers' fixed internal IPs, choose internal naming/DNS records and test services (DHCP providers confirmed in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
-4. **Wireless:** Final staff SSIDs, WLAN authentication/security, client IP addressing, AP placement and VLAN association at HQ/branches. No guest WLAN is planned.
+4. **Wireless:** Final staff SSIDs, WPA2-PSK settings, client IP addressing, AP placement/model compatibility and VLAN association at HQ/branches. No guest WLAN is planned.
 5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
 6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
 7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
@@ -222,3 +232,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-22 | Hybrid IP assignment: DHCP for PCs/wireless, static for router/server/printer/AP infrastructure; site routers provide DHCP | Confirmed |
 | 2026-10-22 | Dedicated internal DNS server at HQ in Server VLAN 30; IP/naming still pending | Confirmed |
 | 2026-10-22 | Staff-only Wi-Fi; no guest SSID/VLAN; HQ wireless VLAN 40 retained | Confirmed |
+| 2026-10-22 | WPA2-Personal (PSK) for employee wireless authentication; WLAN implementation settings pending | Confirmed |
