@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-22  
-> **Status:** Design in progress — decisions confirmed through **Decision 8.1**  
+> **Status:** Design in progress — decisions confirmed through **Decision 8.2**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -40,7 +40,7 @@
 - Each site uses a router and local switched network; HQ contains two office floors and centrally located Web/Mail services.
 - PCs, wireless laptop connectivity, network printers, a corporate Web Server, and a corporate Mail Server are part of the assignment design requirements.
 - Exact router/switch models, interface counts, cabling/WAN simulation method, Wi-Fi configuration, and additional services are **pending**.
-- Earlier *preliminary* device counts (3 company routers, 4 switches, 4 APs, 4 printers, 2 servers) must not be treated as a final device table: **4 APs are now confirmed** (Decision 7.5); three HQ servers (Web/Mail/DNS) are confirmed (Decision 7.2), plus a separate ISP router for simulation (Decision 6.5). Switch/printer models and counts remain to be verified.
+- Earlier *preliminary* device counts (3 company routers, 4 switches, 4 APs, 4 printers, 2 servers) must not be treated as a final device table: **4 switches are now confirmed** (Decision 8.2), **4 APs are confirmed** (Decision 7.5), and **three HQ servers (Web/Mail/DNS) are confirmed** (Decision 7.2), plus a separate ISP router for simulation (Decision 6.5). Switch models and printer counts remain to be verified.
 
 ## Decision 4 — Network segmentation ✅ Confirmed: Option B / Moderate Segmentation
 
@@ -228,14 +228,27 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Limitations:** This is **not** full least-privilege/role-based access control. Separate controls such as host firewalls, MFA, server patching and later identity-based restrictions may still be needed in a real deployment.
 - **Still pending:** Actual ACL entries, rule placement/direction, service ports, server private/public mapping validation, and tests demonstrating both authorised access and blocked unsolicited external access. ACL capability and interaction with PAT/Static NAT must be validated on the chosen Packet Tracer router.
 
+## Decision 8.2 — Layer 2 switch architecture ✅ Confirmed: Four switches (Option A)
+
+- **Selected:** Option A — **four Layer 2 access switches**, distributed as one switch per HQ floor and one per branch office.
+- **HQ Floor 1:** One access switch for 10 PCs, local printer and staff AP; the HQ Router's trunk connects here.
+- **HQ Floor 2:** One access switch for 10 PCs, local printer and staff AP, plus the three HQ servers (Web, Mail, DNS). The Floor 2 switch uplinks to the Floor 1 switch via an **802.1Q trunk** carrying the VLANs needed on both floors, including wireless VLAN 40. Place server interfaces in access VLAN 30 rather than assuming servers use trunk ports.
+- **Branch A (Norwood):** One access switch for 10 PCs, branch printer and staff AP, connected to the Branch A Router.
+- **Branch B (Mawson Lakes):** One access switch for 10 PCs, branch printer and staff AP, connected to the Branch B Router.
+- **Physical pattern:** HQ Router ↔ HQ Floor 1 Switch ↔ HQ Floor 2 Switch; branch routers each connect to their one local Layer 2 switch. The branch routers still connect to HQ via independent Serial WAN links.
+- **Rationale:** Four access switches keep cabling and Packet Tracer configuration simple for the currently modest four office areas; avoids an extra dedicated HQ distribution switch.
+- **Tradeoff:** The HQ Floor 1 switch is a single point of failure for Floor 2's access to the HQ router, other offices and the Internet. There is no redundant uplink in this design.
+- **Still pending:** Exact switch model(s), port numbers/capacity and uplink interfaces, VLAN/Trunk membership, native VLAN/security settings, switch management IPs, printer counts as a final device-table decision, floor-area physical placement and all connectivity tests.
+- **Feasibility check:** Use a switch model with enough ports for users, AP, printer and server links plus uplink(s). The tentative 24-port Layer 2 model is subject to verification against Packet Tracer and exact physical layout.
+
 ## Open design questions — not yet decided
 
-1. **Decision 8.2 — Switch architecture:** Decide whether to use one Layer 2 access switch per HQ floor/branch or introduce an extra dedicated HQ distribution switch.
+1. **Decision 8.3 — Router model:** Select a Packet Tracer router model and serial modules that provide HQ trunk Ethernet + ISP Ethernet + two Serial WAN links, plus suitable interfaces at branches/ISP.
 2. **Services:** Assign the Web/Mail/DNS servers' fixed internal IPs, choose internal naming/DNS records and test services (DHCP providers confirmed in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
 4. **Wireless:** Confirmed 4 APs by floor/site; final staff SSIDs, WPA2-PSK settings, client IP addressing, precise mounting locations, model compatibility and VLAN/port assignments remain pending. No guest WLAN.
 5. **Security:** Basic edge ACL scope confirmed; detailed safe inbound service filtering, NAT return traffic and required any-host ping must be verified in Packet Tracer.
-6. **Hardware/physical:** Cisco device models, required ports and links, physical floors/rooms, scalable configuration.
+6. **Hardware/physical:** Four Layer 2 switches and their placement confirmed; select actual Cisco models, router interfaces/modules, switch ports, physical rooms and future scalability.
 7. **Evidence/documentation:** Consistent logical/physical diagrams, addressing appendix, device table, router configuration and ping evidence, AI-assisted research log, and final independent report.
 
 ## Decision history
@@ -257,3 +270,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-22 | WPA2-Personal (PSK) for employee wireless authentication; WLAN implementation settings pending | Confirmed |
 | 2026-10-22 | Four APs: HQ Floor 1 ×1, HQ Floor 2 ×1, Branch A ×1, Branch B ×1 | Confirmed |
 | 2026-10-22 | Basic extended ACL scope focused on public Web/Mail access while preserving internal any-host ping | Confirmed; exact rules pending |
+| 2026-10-22 | Four Layer 2 access switches: HQ Floor 1 ×1, HQ Floor 2 ×1, Branch A ×1, Branch B ×1; trunk from HQ Router to Floor 1 and trunk to Floor 2 | Confirmed |
