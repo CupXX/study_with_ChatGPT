@@ -2,8 +2,8 @@
 
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
-> **Last updated:** 2026-10-21  
-> **Status:** Design in progress — decisions confirmed through **Decision 6.5**  
+> **Last updated:** 2026-10-22  
+> **Status:** Design in progress — decisions confirmed through **Decision 7.1**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -165,10 +165,22 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - The public website/email test must also include service-level configuration and relevant safe inbound traffic control, not just an ICMP ping.
 - Server internal IPs and the exact NAT/routing CLI are **not yet decided**.
 
+## Decision 7.1 — IP address assignment ✅ Confirmed: DHCP for clients + Static IP for infrastructure
+
+- **Selected:** Option B — a hybrid DHCP/static addressing strategy.
+- **DHCP clients:** Corporate PCs and wireless client laptops obtain their IP address, subnet mask, default gateway and (once decided) DNS settings automatically.
+- **Fixed addresses:** Router interfaces, Web/Mail servers, network printers and wireless AP management interfaces use manually assigned static IP addresses.
+- **DHCP providers:** Use the site's router to serve its local client networks: HQ router supplies DHCP for HQ VLAN 10 (Floor 1), VLAN 20 (Floor 2) and VLAN 40 (wireless); Branch A and B routers each supply DHCP for their own /27 office LAN. Thus **five client DHCP pools** are expected under the current layout.
+- **HQ Server VLAN 30:** No DHCP pool is required at present because the proposed server hosts and their gateway use static addresses. This refines the earlier illustrative phrase about DHCP for all four HQ VLANs.
+- **Address-plan consistency:** Each pool must use the already-confirmed VLSM network/mask, avoid reserved gateway/server/printer/AP addresses, and use appropriate exclusions. Do not hand out the /27 or /26 network/broadcast addresses.
+- **Business rationale:** Automatically configuring many PCs and mobile clients reduces manual work and addressing errors, while stable infrastructure IPs make management and static NAT rules predictable.
+- **To specify later:** Actual gateway/static assignments, per-pool exclusion ranges and available DHCP ranges, DNS service address/options, leases and Packet Tracer verification. Branch office APs may share the branch LAN; this remains subject to final wireless design.
+- **Security note:** DHCP makes administration easier but does not itself enforce device or user access restrictions.
+
 ## Open design questions — not yet decided
 
-1. **Decision 7.1 — Client address assignment:** DHCP for PCs/wireless vs manual static IPs, plus fixed addressing for infrastructure.
-2. **Services:** Exact placement and internal IPs for Web/Mail/DNS/DHCP; naming and access requirements.
+1. **Decision 7.2 — DNS placement:** Decide whether DNS runs on an existing HQ server or a separate DNS server, while keeping public DNS simulation considerations distinct.
+2. **Services:** Exact placement and internal IPs for Web/Mail and DNS; naming, service options and access requirements (DHCP providers selected in Decision 7.1).
 3. **Internet configuration:** Final external test LAN, WAN interface assignment, default/static return routes, NAT/PAT commands and service checks.
 4. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
 5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
@@ -188,3 +200,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-21 | Router-on-a-Stick at HQ for VLANs 10/20/30/40 | Confirmed |
 | 2026-10-22 | PAT for staff outbound traffic and separate Static NAT for Web and Mail servers | Confirmed |
 | 2026-10-22 | ISP Router + external test device simulation; preliminary `203.115.0.0/28` IP allocation | ISP simulation confirmed; addresses provisional |
+| 2026-10-22 | Hybrid IP assignment: DHCP for PCs/wireless, static for router/server/printer/AP infrastructure; site routers provide DHCP | Confirmed |
