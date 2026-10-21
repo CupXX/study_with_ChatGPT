@@ -3,7 +3,7 @@
 > **Course project:** Computer Networking Design Project (individual assignment)  
 > **Organisation:** Four season Digital Consulting (fictional SME digital transformation consultancy)  
 > **Last updated:** 2026-10-21  
-> **Status:** Design in progress — decisions confirmed through **Decision 6.2**  
+> **Status:** Design in progress — decisions confirmed through **Decision 6.3**  
 > **Source of decisions:** Student–ChatGPT design discussions. This is a working decision log, **not** a completed report or implementation.
 
 ## How to use this document
@@ -50,7 +50,7 @@
   - **VLAN 30:** HQ servers
   - **VLAN 40:** HQ wireless clients
 - Each branch initially uses **one local office LAN/subnet**, rather than extensive per-department VLANs.
-- Routing between HQ VLANs will be required; **router-on-a-stick vs Layer 3 switching is not decided yet**.
+- Inter-VLAN routing for HQ VLANs is handled by Router-on-a-Stick (Decision 6.3).
 - VLAN separation **alone is not a security policy**. Detailed ACL/access-control decisions remain pending.
 - A provisional simplification is for branch Wi-Fi clients to share each branch's office LAN; confirm during wireless design.
 
@@ -104,7 +104,7 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Implementation outline (not CLI commands):**
   - Each branch can use a default route pointing towards HQ.
   - HQ will need paths to the Branch A and Branch B LANs through their corresponding WAN links.
-  - HQ's own connected VLAN networks must be routed internally; final inter-VLAN method is still to be chosen.
+  - HQ's own connected VLAN networks will be routed via the chosen Router-on-a-Stick subinterfaces.
   - HQ's Internet default route, ISP link, and any NAT are pending design decisions.
 - **Testing:** Verify inter-office host connectivity and router-to-router ping, along with any other assignment-required evidence.
 
@@ -118,10 +118,20 @@ The following VLSM addresses were laid out and carried forward into routing desi
 - **Scope:** This is a **Packet Tracer teaching simulation**, not a claim that the company would lease traditional serial lines in a real modern network. Consider Ethernet WAN, leased services, and/or VPN as future alternatives.
 - **Still pending:** Exact router models/interfaces, DCE end assignment, serial link configuration, routing next-hop IPs, and connection to the ISP/public IP block.
 
+## Decision 6.3 — Inter-VLAN routing ✅ Confirmed: Router-on-a-Stick
+
+- **Selected:** Router-on-a-Stick at HQ instead of a Layer 3 switch.
+- **Scope:** HQ VLANs 10 (Floor 1 staff), 20 (Floor 2 staff), 30 (servers), and 40 (wireless).
+- **How it works:** A trunk from a HQ switch to one physical Ethernet interface on HQ Router carries multiple tagged VLANs. The router uses individual 802.1Q subinterfaces for inter-VLAN routing and each VLAN's default-gateway IP.
+- **Switch topology:** The HQ floor switches must carry the relevant VLANs on a suitably configured trunk, with appropriate access-port assignment. Exact port mapping and which switch serves the router trunk are pending physical design.
+- **WAN/ISP interfaces:** Keep two Serial interfaces for HQ–Branch A and HQ–Branch B. A separate routed Ethernet interface (or suitable alternative) is planned for the HQ–ISP connection; verify router interface/module capacity before final implementation.
+- **Reason:** Reuses the HQ router, avoids the need for a dedicated Layer 3 switch, and fits a modest four-VLAN HQ with 20 office PCs.
+- **Tradeoff:** Inter-VLAN traffic shares a router-facing trunk and the router's forwarding capacity, creating a possible performance bottleneck. VLAN separation itself is not an access-control policy.
+- **Still pending:** Subinterface names, gateway IPs, switch/router device models, VLAN-to-port assignments, and whether any ACL is required. Do not treat the example layout as a finished Packet Tracer configuration.
+
 ## Open design questions — not yet decided
 
-1. **Decision 6.3 — Inter-VLAN routing:** Router-on-a-stick or Layer 3 switch? Check topology, port counts, and simulator support.
-2. **Internet edge:** ISP-facing addresses, default route, and NAT design.
+1. **Decision 6.4 — Internet edge:** ISP-facing subnet/addressing, default route, NAT/PAT design.
 3. **Services:** Exact placement and IPs for Web/Mail/DNS/DHCP; naming and access requirements.
 4. **Wireless:** HQ/branch SSIDs, client IP assignment, AP placement and VLAN association.
 5. **Security:** Practical access policies that do not contradict required all-host ping connectivity.
@@ -138,3 +148,4 @@ The following VLSM addresses were laid out and carried forward into routing desi
 | 2026-10-21 | VLSM address allocation table above | Adopted as working addressing plan |
 | 2026-10-21 | Static Routing for three sites | Confirmed |
 | 2026-10-21 | Serial WAN links for HQ–Branch A and HQ–Branch B | Confirmed |
+| 2026-10-21 | Router-on-a-Stick at HQ for VLANs 10/20/30/40 | Confirmed |
