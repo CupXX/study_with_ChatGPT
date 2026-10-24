@@ -1,0 +1,71 @@
+% Section 6 working first draft, 2026-10-24.
+% New allocation: Yanzhang — Context Construction and Generation Failures.
+% Integrates Stage 3 research with a condensed, evidence-based Stage 4 draft.
+% Based on original S9.tex (preserved unchanged); page count in final ACM template unverified.
+% A failure's observed output label is NOT evidence of its causal stage by itself.
+\section{Context Construction and Generation Failures}
+\label{sec:context-generation}
+
+\subsection{Scope and Stage Boundaries}
+\label{subsec:section6-boundaries}
+
+The third and fourth stages of the working RAG taxonomy concern distinct transitions between retrieved evidence and generated claims. \emph{Context construction} (Stage~3) selects, orders, compresses, truncates, or assembles retrieved material into the prompt that the generator actually receives. This starts after candidate retrieval and ranking (Stage~2); document chunking and index construction remain Stage~1 operations. \emph{Generation and knowledge utilisation} (Stage~4) then interprets this visible context, resolves evidence conflicts, synthesises assertions, and attaches citations. A failed answer alone cannot identify which transition broke. Relevant material might have been retrieved but omitted from the prompt, or it might have been presented adequately yet used incorrectly.
+
+We consequently separate three questions: \emph{was the evidence retrieved; was it preserved and made visible; and was the visible evidence used appropriately?} Joren et al.\ operationalise one part of this distinction by evaluating whether a question--context pair contains sufficient information to derive an answer \cite[Secs.~3--4]{joren2025sufficient}. Our labels \emph{contradictory} and \emph{unsupported} describe output relative to a declared evidence reference, not inherently the failure's origin. Their use must not conflate a wrong-world answer, an unsupported-from-prompt claim, and an inaccurate citation.
+
+\subsection{Context Construction Failures (Stage 3)}
+\label{subsec:section6-context}
+
+\paragraph{Evidence selection, omission, and truncation.}
+Under a finite prompt budget, context construction must choose among retrieved passages. Retrieval success therefore does not guarantee that the answer-bearing content survives selection, filtering, or subsequent truncation. An omission constitutes a Stage~3 failure only if relevant evidence existed among retrieved candidates \emph{before} context assembly; if no relevant candidate was returned, the primary problem belongs to Stage~2. Xu et al.\ study this intermediate selection explicitly in RECOMP, which learns either to extract useful sentences from retrieved documents or to produce a shorter, query-focused abstractive summary before appending it to a frozen language model \cite[Secs.~2--3]{xu2024recomp}. Its option to prepend an empty summary when retrieval is unhelpful illustrates that forwarding every retrieved item is not inherently beneficial. However, these experiments assess task-oriented selection and compression, not the frequency of truncation-induced hallucinations in operational deployments. Truncation itself remains a plausible mechanism to test by recording which supporting passages were dropped, rather than an observed causal result established by the RECOMP study.
+
+\paragraph{Evidence ordering and long-context interference.}
+Even when relevant information survives selection, its location among distractors can change whether a model uses it. Liu et al.\ systematically vary the number of supplied documents and the position of a known answer-containing passage on multi-document question answering \cite[Secs.~2 and 5]{liu2024lost}. They observe a pronounced position-dependent pattern: some models perform better when the relevant passage appears near the beginning or end than when it occurs in the middle. Importantly, the relevant passage is still \emph{present} in the controlled test. Thus the result identifies a prompt-arrangement sensitivity, but the resulting answer error also involves the generator's limited ability to exploit available information; it does not prove that the context builder alone caused a hallucination. Their retriever--reader case study further shows that more retrieved documents can increase recall without a commensurate gain in answer performance. The results are conditional on the evaluated models, tasks, and document configurations, not a universal ranking rule.
+
+\paragraph{Compression, information loss, and new unsupported content.}
+Compression has two competing objectives: preserve task-relevant evidence while reducing prompt length and cost. RECOMP's extractive compressor selects source sentences, whereas its abstractive compressor may synthesise new summary text \cite[Secs.~2--3]{xu2024recomp}. This matters causally: an extractive summary can omit an essential premise, while an abstractive one can additionally introduce a statement not entailed by the retrieved sources. Xu et al.\ separately evaluate faithfulness (source entailment) and comprehensiveness (answer-relevant sufficiency) on a small manual sample of 30 non-empty summaries per evaluated dataset and system \cite[Sec.~6, Table~4]{xu2024recomp}. Their abstractive compressor is not uniformly more faithful than the GPT-3.5 comparison summariser, including on multi-hop HotpotQA. Improved downstream answer performance or shorter summaries therefore cannot substitute for independent source-faithfulness checks.
+
+Jiang et al.\ propose LongLLMLingua, combining question-aware coarse-to-fine compression, document reordering, dynamic compression budgets and subsequence recovery \cite[Secs.~4--5]{jiang2024longllmlingua}. On the paper's NaturalQuestions experiments involving twenty documents, the approach improves answering under selected token budgets and positions while reducing input length \cite[Table~1]{jiang2024longllmlingua}. Unlike RECOMP, which learns extractive and abstractive task-oriented compressors, LongLLMLingua selects and compresses material using question-aware importance estimates. Both address context efficiency; neither establishes that \emph{any} aggressive compression preserves all premises, nor that benchmark accuracy gains amount to a measured drop in contradictory or unsupported claim rates across domains. These comparisons support reporting both retention of reference evidence and downstream answer/citation quality rather than token savings alone.
+
+\paragraph{Conflicting passages and prompt assembly.}
+A context assembler may place mutually inconsistent sources together without marking their provenance, time, or evidentiary status. The resulting visible conflict is a Stage~3 \emph{input condition}; choosing the wrong proposition despite adequate disambiguating evidence is a potentially Stage~4 \emph{utilisation error}. Experiments by Jin et al.\ on internal--external and inter-passage conflicts \cite[Secs.~3--4]{jin2024tug}, together with Wang et al.'s analysis of imperfect search results \cite[Sec.~3]{wang2025astute}, motivate checking \emph{which} conflicting passages appeared in the final prompt before attributing the error to either stage. Neither study, by itself, isolates a universal effect of prompt-template wording or multi-step orchestration. We do not treat prompt injection as an established mechanism in this chapter without directly relevant included RAG evidence.
+
+\subsection{Generation and Knowledge Utilisation Failures (Stage 4)}
+\label{subsec:section6-generation}
+
+\paragraph{Failure despite sufficient visible evidence.}
+The essential Stage~4 diagnostic is whether adequate support was actually presented. Joren et al.\ distinguish cases where the provided context is sufficient from those where it is insufficient, and report that models can still answer incorrectly despite sufficient context \cite[Secs.~3--4]{joren2025sufficient}. Conversely, models may answer an insufficient-context question from parametric knowledge, so absence from the prompt does not entail factual falsity. Because the study uses an automatically assessed sufficiency signal, with a limited human-checked validation sample, its classifications should be treated as informative rather than infallible. A robust analysis tests evidence sufficiency separately from response correctness.
+
+\paragraph{Knowledge conflict and unsupported synthesis.}
+Models sometimes privilege an incorrect internally remembered response over correct external evidence, or trust misleading passages rather than more reliable knowledge. Jin et al.\ document setting-dependent response preferences under experimentally constructed knowledge conflicts \cite[Secs.~3--5]{jin2024tug}; Wang et al.\ show why simply privileging either internal memory or retrieval can be unsafe in their evaluated QA setups \cite[Secs.~3--5]{wang2025astute}. These behaviours matter only once the competing information is actually model-visible. Multi-hop reasoning poses a related difficulty: even when constituent evidence is present, the generator can make an unsupported inferential transition or follow a distractor. OPEN-RAG addresses complex evidence integration through combined architecture, retrieval and training changes \cite[Secs.~2--4]{islam2024openrag}. Its system-level gains do not isolate a generator-only causal effect; exact-match accuracy also cannot validate every intermediate reasoning step.
+
+\paragraph{Attribution, confidence, and selective response.}
+An apparently fluent answer may contain claims whose attached passages do not support them. ALCE evaluates citation quality alongside answer correctness and fluency, documenting incomplete citation support in evaluated retrieval-based long-form QA systems \cite[Secs.~2--4]{gao2023alce}. RAGTruth provides span-level annotation for unsupported and contradictory generations, which is useful for identifying \emph{manifestations}, not proving their origin in Stage~4 \cite[Secs.~2--3]{niu2024ragtruth}. Generator-oriented interventions offer conditional responses: Self-RAG introduces reflection tokens for relevance and support decisions \cite[Sec.~3]{asai2024selfrag}; Joren et al.\ examine confidence/context-sufficiency signals for accuracy--coverage trade-offs in selective generation \cite[Sec.~5]{joren2025sufficient}. Neither intervention should be described as eliminating hallucinations, and abstention trades answer coverage for reliability under the settings tested. Their detailed comparative effectiveness and resource requirements belong in the Survey's detection-and-mitigation section.
+
+\subsection{Critical Comparison and Cross-Stage Implications}
+\label{subsec:section6-comparison}
+
+The studies examine related but different units of evidence. Liu et al.\ manipulate \emph{where} a relevant document appears, holding its presence fixed \cite{liu2024lost}; RECOMP and LongLLMLingua change \emph{what content} is selected or compressed \cite{xu2024recomp,jiang2024longllmlingua}; Joren et al.\ classify \emph{whether the final context suffices} \cite{joren2025sufficient}; and ALCE/RAGTruth measure properties of the \emph{resulting answer} \cite{gao2023alce,niu2024ragtruth}. These tasks, annotations and metrics are not interchangeable. In particular, improving retrieval recall, compressing inputs, increasing QA accuracy, and reducing hallucinated claim spans are separate outcomes; none should be silently substituted for another.
+
+\begin{table}[t]
+\centering
+\caption{Selected evidence for the Stage~3/Stage~4 boundary. Results are conditional on the cited experimental settings.}
+\label{tab:section6-boundaries}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}p{0.23\columnwidth}p{0.33\columnwidth}p{0.35\columnwidth}@{}}
+\toprule
+Evidence & What is examined & What it cannot establish alone \\
+\midrule
+Liu et al.\ \cite{liu2024lost} & Position of a visible relevant passage & Proven hallucination prevalence or a Stage~3-only cause \\
+Xu et al.\ \cite{xu2024recomp} & Extraction/abstraction and task scores & Guaranteed faithfulness after compression \\
+Jiang et al.\ \cite{jiang2024longllmlingua} & Token cost, ordering and answer performance & Uniform reliability gains across RAG deployments \\
+Joren et al.\ \cite{joren2025sufficient} & Sufficiency of provided question--context & Error-free sufficiency judgements or truth of sources \\
+Gao/Niu et al.\ \cite{gao2023alce,niu2024ragtruth} & Citation support and output error spans & Which upstream stage caused a defect \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A defensible cross-stage explanation should first compare the retrieved candidate set with the prompt actually supplied, including passage provenance and any compression output. It should then check whether the model had sufficient supporting evidence, and only afterwards evaluate claim-level support, correctness, and possible conflict resolution. One plausible sequence is \emph{retrieved evidence $\rightarrow$ compressed context omitting a premise $\rightarrow$ unsupported completion}; another is \emph{complete visible evidence $\rightarrow$ incorrect model synthesis}. These sequences are analytical hypotheses until a study traces the individual transitions. Downstream recovery is also possible; failure propagation is not inevitable.
+
+Taken together, available studies justify treating context construction as a distinct reliability boundary while acknowledging its interaction with generation. The strongest supported conclusion is not that longer contexts or compression are universally harmful, but that \emph{which evidence survives, where it appears, and how it is utilised} must be evaluated separately. At integration, passage-selection and ordering findings should be forwarded to the taxonomy author, claim manifestations and traceable examples to the synthesis author, and measured compression, verification, calibration and abstention trade-offs to the detection/mitigation author.
